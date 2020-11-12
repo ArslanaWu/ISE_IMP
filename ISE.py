@@ -12,12 +12,13 @@ import numpy as np
 
 nodes = []
 edges = []
+inv_edges = []
 seed_set = []
 repeat_time = 1000
 
 
 def read_dataset():
-    global nodes, edges, seed_set
+    global nodes, edges, inv_edges, seed_set
 
     with open(network, 'r') as f_net:
         line = f_net.readline()
@@ -28,6 +29,7 @@ def read_dataset():
         for i in range(0, node_cnt + 1):
             nodes.append(i)
             edges.append({})
+            inv_edges.append({})
 
         for i in range(0, edge_cnt):
             line = f_net.readline()
@@ -35,6 +37,9 @@ def read_dataset():
 
             adj_list = edges[int(edge_info[0])]
             adj_list[int(edge_info[1])] = float(edge_info[2])
+
+            inv_adj_list = inv_edges[int(edge_info[1])]
+            inv_adj_list[int(edge_info[0])] = float(edge_info[2])
 
     with open(seed, 'r') as f_seed:
         for line in f_seed.readlines():
@@ -51,13 +56,23 @@ def one_LT_sample():
     cnt = len(act_set)
     while not len(act_set) == 0:
         new_act_set = []
+
         for seed in act_set:
             adj_list = edges[seed]
             for neighbor in adj_list:
                 if activity[neighbor]:
                     continue
-                # todo:cal weight of activates neighbors
+
                 w_total = 0
+                sub_adj_list = edges[neighbor]
+                for sub_neighbor in sub_adj_list:
+                    if activity[sub_neighbor]:
+                        w_total += sub_adj_list[sub_neighbor]
+                sub_adj_list = inv_edges[neighbor]
+                for sub_neighbor in sub_adj_list:
+                    if activity[sub_neighbor]:
+                        w_total += sub_adj_list[sub_neighbor]
+
                 if w_total >= thresh[neighbor]:
                     activity[neighbor] = True
                     new_act_set.append(neighbor)
