@@ -1,7 +1,7 @@
-# -i ./dataset/network.txt -s ./dataset/network_seeds.txt -m IC -t 60
-# -i ./dataset/network.txt -s ./dataset/network_seeds.txt -m LT -t 60
-# -i ./dataset/NetHEPT.txt -s ./dataset/network_seeds.txt -m IC -t 60
-# -i ./dataset/NetHEPT.txt -s ./dataset/network_seeds.txt -m LT -t 60
+# -i ./dataset/network.txt -s ./dataset/network_seeds.txt -m IC -t 5
+# -i ./dataset/network.txt -s ./dataset/network_seeds.txt -m LT -t 5
+# -i ./dataset/NetHEPT.txt -s ./dataset/network_seeds.txt -m IC -t 5
+# -i ./dataset/NetHEPT.txt -s ./dataset/network_seeds.txt -m LT -t 5
 
 import multiprocessing as mp
 import time
@@ -64,10 +64,6 @@ def one_LT_sample():
                     continue
 
                 w_total = 0
-                sub_adj_list = edges[neighbor]
-                for sub_neighbor in sub_adj_list:
-                    if activity[sub_neighbor]:
-                        w_total += sub_adj_list[sub_neighbor]
                 sub_adj_list = inv_edges[neighbor]
                 for sub_neighbor in sub_adj_list:
                     if activity[sub_neighbor]:
@@ -121,14 +117,14 @@ if __name__ == '__main__':
     read_dataset()
 
     all_sample = 0
-    time_out = time.time() + time_limit - 1
+    time_out = time.time() + time_limit - 5
     sample_cnt = 0
     if model == 'IC':
         while True:
             if time.time() > time_out:
                 break
-            if sample_cnt > repeat_time:
-                break
+            # if sample_cnt > repeat_time:
+            #     break
             sample_cnt += 1
             one_sample = one_IC_sample()
             # print(one_sample)
@@ -137,13 +133,14 @@ if __name__ == '__main__':
         while True:
             if time.time() > time_out:
                 break
-            if sample_cnt > repeat_time:
-                break
+            # if sample_cnt > repeat_time:
+            #     break
             sample_cnt += 1
             one_sample = one_LT_sample()
             all_sample += one_sample
 
     # print("Result is {}".format(all_sample / repeat_time))
+    # print('Run time: {}'.format(sample_cnt))
     print(all_sample / sample_cnt)
 
     sys.stdout.flush()

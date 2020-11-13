@@ -17,8 +17,7 @@ def sum_and_product(x, y):
     """
     # 计算两个数的和与积
     """
-    while True:
-        x = x + y
+    print(x+y,x*y)
     return x + y, x * y
 
 
