@@ -19,7 +19,6 @@ def cal_total_size(R):
 
 def read_dataset(network):
     nodes = []
-    edges = []
     inv_edges = []
 
     with open(network, 'r') as f_net:
@@ -30,20 +29,16 @@ def read_dataset(network):
 
         for i in range(0, node_cnt + 1):
             nodes.append(i)
-            edges.append({})
             inv_edges.append({})
 
         for i in range(0, edge_cnt):
             line = f_net.readline()
             start, end, weight = line.split(" ")
 
-            adj_list = edges[int(start)]
-            adj_list[int(end)] = float(weight)
-
             inv_adj_list = inv_edges[int(end)]
             inv_adj_list[int(start)] = float(weight)
 
-    return nodes, edges, inv_edges
+    return nodes, inv_edges
 
 
 def sampling(epsilon, l):
@@ -84,7 +79,7 @@ def sampling(epsilon, l):
 
 def sampling_bound_with_time():
     R = []
-    while time.time() < time_out:
+    while time.time() < time_out and len(R) < 4000000:
         R.append(gen_RR())
 
     # cal_total_size(R)
@@ -196,8 +191,8 @@ def node_selection(R):
 def IMM(epsilon, l):
     n = len(nodes)
     l = l * (1 + math.log(2) / math.log(n))
-    R = sampling(epsilon, l)
-    # R = sampling_bound_with_time()
+    # R = sampling(epsilon, l)
+    R = sampling_bound_with_time()
     # print("Size of R:{}".format(sys.getsizeof(R)))
     # print("R length = {}".format(len(R)))
     Sk, no_use = node_selection(R)
@@ -206,8 +201,8 @@ def IMM(epsilon, l):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('-i', '--network', type=str, default='../dataset/in_100000_250000_1.txt')
-    parser.add_argument('-i', '--network', type=str, default='../dataset/NetHEPT.txt')
+    parser.add_argument('-i', '--network', type=str, default='../dataset/in_100000_250000_1.txt')
+    # parser.add_argument('-i', '--network', type=str, default='../dataset/NetHEPT.txt')
     parser.add_argument('-k', '--size', type=str, default='500')
     parser.add_argument('-m', '--model', type=str, default='IC')
     parser.add_argument('-t', '--time_limit', type=int, default=120)
@@ -216,7 +211,7 @@ if __name__ == '__main__':
     time_out = time.time() + int(args.time_limit / 2)
     # time_start = time.time()
 
-    nodes, edges, inv_edges = read_dataset(os.path.abspath(args.network))
+    nodes, inv_edges = read_dataset(os.path.abspath(args.network))
 
     size = int(args.size)
     model = args.model
