@@ -1,0 +1,7 @@
+*.pyc
+/IMP/IMM_gy&zy/
+*.zip
+/ISE/argmentparser_and_mutilprocessing_demo.py
+/IMP/test.py
+.idea/
+*.iml
