@@ -79,8 +79,23 @@ def sampling(epsilon, l):
 
 def sampling_bound_with_time():
     R = []
-    while time.time() < time_out and len(R) < 4000000:
-        R.append(gen_RR())
+    idx = 0
+    total_size = 0
+    R_size = 0
+    rand_rr_size = 0
+    while time.time() < time_out and total_size < 512 * 1024 * 1024:
+    # while time.time() < time_out and len(R) < 4000000:
+        rr = gen_RR()
+        R.append(rr)
+
+        if idx == 0:
+            rand_rr_size = sys.getsizeof(rr)
+            total_size -= R_size
+            R_size = sys.getsizeof(R)
+            total_size += R_size
+        idx += 1
+        idx %= 16
+        total_size += rand_rr_size
 
     # cal_total_size(R)
 
@@ -194,15 +209,17 @@ def IMM(epsilon, l):
     # R = sampling(epsilon, l)
     R = sampling_bound_with_time()
     # print("Size of R:{}".format(sys.getsizeof(R)))
-    # print("R length = {}".format(len(R)))
+    print("R length = {}".format(len(R)))
     Sk, no_use = node_selection(R)
     return Sk
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--network', type=str, default='../dataset/in_100000_250000_1.txt')
-    # parser.add_argument('-i', '--network', type=str, default='../dataset/NetHEPT.txt')
+    # parser.add_argument('-i', '--network', type=str, default='../dataset/in_100000_250000_1.txt')
+    # parser.add_argument('-i', '--network', type=str, default='../dataset/in_60000_150000_1.txt')
+    # parser.add_argument('-i', '--network', type=str, default='../dataset/in_1E5_1E6_1.txt')
+    parser.add_argument('-i', '--network', type=str, default='../dataset/NetHEPT.txt')
     parser.add_argument('-k', '--size', type=str, default='500')
     parser.add_argument('-m', '--model', type=str, default='IC')
     parser.add_argument('-t', '--time_limit', type=int, default=120)
