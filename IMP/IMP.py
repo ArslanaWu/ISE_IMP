@@ -77,14 +77,23 @@ def sampling(epsilon, l):
     return R
 
 
-def sampling_bound_with_time():
+def sampling_time_amount_bound():
+    R = []
+    while time.time() < time_out and len(R) < 4000000:
+        R.append(gen_RR())
+
+    # cal_total_size(R)
+
+    return R
+
+
+def sampling_time_memory_bound():
     R = []
     idx = 0
     total_size = 0
     R_size = 0
     rand_rr_size = 0
     while time.time() < time_out and total_size < 512 * 1024 * 1024:
-    # while time.time() < time_out and len(R) < 4000000:
         rr = gen_RR()
         R.append(rr)
 
@@ -206,8 +215,11 @@ def node_selection(R):
 def IMM(epsilon, l):
     n = len(nodes)
     l = l * (1 + math.log(2) / math.log(n))
+
     # R = sampling(epsilon, l)
-    R = sampling_bound_with_time()
+    # R = sampling_time_amount_bound()
+    R = sampling_time_memory_bound()
+
     # print("Size of R:{}".format(sys.getsizeof(R)))
     print("R length = {}".format(len(R)))
     Sk, no_use = node_selection(R)
